@@ -29,11 +29,13 @@ master_array = []
 def get_rows(team_url):
     html = urlopen(team_url).read()
     soup = BeautifulSoup(html, "lxml")
-    team_name = soup.find("div", "profile_info").h4.string
+    profile = soup.find("div", "profile_info")
+    team_name = profile.h4.get_text(strip=True)
+    division = profile.find("dl", id="CT_Main_0_dlGenderDivision").dd.get_text(strip=True)
 
     # team_table = soup.find("table", "global_table")
 
-    print team_name
+    print team_name, division
 
 get_rows(team_links[3])
 
