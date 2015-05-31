@@ -27,31 +27,29 @@ def get_team_links(section_url):
 
 team_links = get_team_links(BASE_URL)
 
-# with open("nationals15.csv", "wb") as csvout:
+with open("nationals15.csv", "wb") as csvout:
+    writer = csv.writer(csvout)
+    writer.writerow(["Team", "Division", "Number", "Player", "Position", "Height", "Goals", "Assists", "Ds", "Turnovers"])
 
-master_array = []
+    def get_rows(team_url):
+        soup = make_soup(team_url)
+        profile = soup.find("div", "profile_info")
+        team_name = profile.h4.get_text(strip=True)
+        division = profile.find("dl", id="CT_Main_0_dlGenderDivision").dd.get_text(strip=True)
 
-def get_rows(team_url):
-    soup = make_soup(team_url)
-    profile = soup.find("div", "profile_info")
-    team_name = profile.h4.get_text(strip=True)
-    division = profile.find("dl", id="CT_Main_0_dlGenderDivision").dd.get_text(strip=True)
+        team_rows = soup.find("table", "global_table").find_all("tr")
 
-    team_rows = soup.find("table", "global_table").find_all("tr")
+        for i, row in enumerate(team_rows):
+            if i > 0:
+                r =[team_name, division]
+                for cell in row.find_all("td"):
+                    r.append(cell.get_text(strip=True))
+                writer.writerow(r)
 
-    for i, row in enumerate(team_rows):
-        if i > 0:
-            r =[team_name, division]
-            for cell in row.find_all("td"):
-                r.append(cell.get_text(strip=True))
-            master_array.append(r)
+    for team in team_links:
+        get_rows(team)
 
-    # print team_name, division
-
-for team in team_links:
-    get_rows(team)
-
-print master_array
+# print master_array
 
 
 
