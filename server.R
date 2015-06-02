@@ -66,22 +66,22 @@ shinyServer(function(input, output) {
   # creating ggvis scatterplot
   scatter <- reactive({
     # scatterplot of total points/ast
-    # if(input$radio[1] == "totals") {
-    # key := ~ID
+    if(input$radio2[1] == "Names") {
     selection %>%
       ggvis(~Assists, ~Goals, key := ~ID, text:= ~Player) %>%
       layer_text(angle := 20) %>%
       add_tooltip(player_tooltip, "hover")
     
     # scatterplot of per game stats
-    # } else {
-      # selection %>%
-      #   ggvis(~Assists_per_Game, ~Goals_per_Game, key := ~ID, text := ~Player) %>%
-      #   layer_text(angle := 20) %>%
-      #   add_axis("x", title = "Assists/Game") %>%
-      #   add_axis("y", title = "Goals/Game") %>%
-      #   add_tooltip(player_tooltip, "hover")
-    # }
+    } else {
+      selection %>%
+        ggvis(~Assists, ~Goals, key := ~ID) %>%
+        layer_points(stroke := "black", fill = ~Team, size := 75, size.hover := 200,
+                     fillOpacity := 0.45, fillOpacity.hover := 0.7,
+                     strokeWidth := 0) %>%
+        add_tooltip(player_tooltip, "hover") %>%
+        hide_legend("fill")
+    }
   })
       
   scatter %>% bind_shiny("scatter")

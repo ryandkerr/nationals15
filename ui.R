@@ -32,7 +32,9 @@ shinyUI(fluidPage(
       
       selectInput("team", label = "Team:",
                   choices = teams,
-                  selected = "All Players")
+                  selected = "All Players"),
+      
+      radioButtons("radio2", label = "Plot", choices = c("Names", "Circles"), selected = "Names")
     ),
     
     mainPanel(
