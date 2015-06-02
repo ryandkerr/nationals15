@@ -1,11 +1,10 @@
 library(shiny)
 library(BH)
 library(ggvis)
-indoor <- read.csv("data/nationals15.csv")
-indoor$Key <- 1:nrow(indoor)
+nationals <- read.csv("data/nationals15.csv")
 # indoor$Assists_per_Game <- round(indoor$Assists / indoor$Games, digits = 1)
 # indoor$Goals_per_Game <- round(indoor$Goals/indoor$Games, digits = 1)
-# indoor <- replace(indoor, is.na(indoor), 0)
+nationals <- replace(nationals, is.na(nationals), 0)
 
 shinyServer(function(input, output) {
 
@@ -24,10 +23,10 @@ shinyServer(function(input, output) {
     # games_max <- input$game_range[2]
         
     # filtering data
-    s <- indoor[indoor$Assists >= ast_min &
-                        indoor$Assists <= ast_max &
-                        indoor$Goals >= goal_min &
-                        indoor$Goals <= goal_max,]
+    s <- nationals[nationals$Assists >= ast_min &
+                        nationals$Assists <= ast_max &
+                        nationals$Goals >= goal_min &
+                        nationals$Goals <= goal_max,]
                         # indoor$Games >= gLames_min &
                         # indoor$Games <= games_max,]
     
@@ -51,12 +50,11 @@ shinyServer(function(input, output) {
     # if(is.null(x$ID)) return(NULL)    
     
     players <- isolate(selection())
-    selected_player <- players[players$Key == x$Key,]
+    selected_player <- players[players$ID == x$ID,]
     # paste0("<b>", selected_player$Player, "</b><br>",
     #        "<b>Team: </b>", selected_player$Team, "<br>",
     #        "<b>Ast/Gm: </b>", selected_player$Assists_per_Game, "<br>",
     #        "<b>Gol/Gm: </b>", selected_player$Goals_per_Game)
-    head(players)
     
     paste0("<b>", selected_player$Player, "</b><br>",
            "<b>Team: </b>", selected_player$Team, "<br>",
@@ -70,7 +68,7 @@ shinyServer(function(input, output) {
     # if(input$radio[1] == "totals") {
     # key := ~ID
     selection %>%
-      ggvis(~Assists, ~Goals, text:= ~Player) %>%
+      ggvis(~Assists, ~Goals, key := ~ID, text:= ~Player) %>%
       layer_text(angle := 20) %>%
       add_tooltip(player_tooltip, "hover")
     
