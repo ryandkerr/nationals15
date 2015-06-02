@@ -2,6 +2,7 @@ library(shiny)
 library(BH)
 library(ggvis)
 nationals <- read.csv("data/nationals15.csv")
+nationals$ID <- 1:nrow(nationals)
 # indoor$Assists_per_Game <- round(indoor$Assists / indoor$Games, digits = 1)
 # indoor$Goals_per_Game <- round(indoor$Goals/indoor$Games, digits = 1)
 nationals <- replace(nationals, is.na(nationals), 0)
@@ -37,7 +38,7 @@ shinyServer(function(input, output) {
     }
 
     # filter by team
-    if(input$team[1] != "All Players") {
+    if(input$team[1] != "All Teams") {
       s <- s[s$Team == input$team[1],]
     }
     
