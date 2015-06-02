@@ -32,7 +32,7 @@ def get_team_links(section_url):
 team_links = get_team_links(BASE_URL)
 
 # creating csv from data
-with open("nationals15.csv", "wb") as csvout:
+with open("data/nationals15.csv", "wb") as csvout:
     writer = csv.writer(csvout)
     writer.writerow(["Team", "Division", "Number", "Player", "Position", "Height", "Goals", "Assists", "Ds", "Turnovers"])
 
