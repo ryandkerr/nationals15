@@ -18,6 +18,9 @@ shinyUI(fluidPage(
   
   sidebarLayout(
     sidebarPanel(
+      radioButtons("radio3", label = "Data:",
+                   choices = c("Totals", "Per Game"), selected = "Totals"),
+      
       radioButtons("radio", label = "Division",
                    choices = list("Men's" = "mens", "Women's" = "womens"),
                    selected = "mens"),
@@ -34,7 +37,8 @@ shinyUI(fluidPage(
                   choices = teams,
                   selected = "All Players"),
       
-      radioButtons("radio2", label = "Plot", choices = c("Names", "Circles"), selected = "Names")
+      radioButtons("radio2", label = "Plot", choices = c("Names", "Circles"),
+                   selected = "Names")
     ),
     
     mainPanel(

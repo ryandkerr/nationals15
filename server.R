@@ -3,8 +3,8 @@ library(BH)
 library(ggvis)
 nationals <- read.csv("data/nationals15.csv")
 nationals$ID <- 1:nrow(nationals)
-# indoor$Assists_per_Game <- round(indoor$Assists / indoor$Games, digits = 1)
-# indoor$Goals_per_Game <- round(indoor$Goals/indoor$Games, digits = 1)
+nationals$Assists_per_Game <- round(nationals$Assists / nationals$Games, digits = 1)
+nationals$Goals_per_Game <- round(nationals$Goals/nationals$Games, digits = 1)
 nationals <- replace(nationals, is.na(nationals), 0)
 
 shinyServer(function(input, output) {
@@ -65,20 +65,36 @@ shinyServer(function(input, output) {
   
   # creating ggvis scatterplot
   scatter <- reactive({
-    # scatterplot of total points/ast
-    if(input$radio2[1] == "Names") {
-    selection %>%
-      ggvis(~Assists, ~Goals, key := ~ID, text:= ~Player) %>%
-      layer_text(angle := 20) %>%
-      add_tooltip(player_tooltip, "hover")
-    
-    # scatterplot of per game stats
-    } else {
+    if(input$radio2[1] == "Names" && input$radio3 == "Totals") {
+      selection %>%
+        ggvis(~Assists, ~Goals, key := ~ID, text:= ~Player) %>%
+        layer_text(angle := 20) %>%
+        add_tooltip(player_tooltip, "hover")
+      
+    } else if(input$radio2[1] == "Circles" && input$radio3 == "Totals") {
       selection %>%
         ggvis(~Assists, ~Goals, key := ~ID) %>%
         layer_points(stroke := "black", fill = ~Team, size := 75, size.hover := 200,
                      fillOpacity := 0.45, fillOpacity.hover := 0.7,
                      strokeWidth := 0) %>%
+        add_axis("x", title = "Assists per Game") %>%
+        add_axis("y", title = "Goals per Game") %>%
+        add_tooltip(player_tooltip, "hover") %>%
+        hide_legend("fill")
+    
+    } else if(input$radio2[1] == "Names" && input$radio3 == "Per Game") {
+      selection %>%
+        ggvis(~Assists_per_Game, ~Goals_per_Game, key := ~ID, text := ~Player) %>%
+        layer_text(angle := 20) %>%
+        add_tooltip(player_tooltip, "hover")
+    } else {
+      selection %>%
+        ggvis(~Assists_per_Game, ~Goals_per_Game, key := ~ID) %>%
+        layer_points(stroke := "black", fill = ~Team, size := 75, size.hover := 200,
+                     fillOpacity := 0.45, fillOpacity.hover := 0.7,
+                     strokeWidth := 0) %>%
+        add_axis("x", title = "Assists per Game") %>%
+        add_axis("y", title = "Goals per Game") %>%
         add_tooltip(player_tooltip, "hover") %>%
         hide_legend("fill")
     }
