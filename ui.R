@@ -26,10 +26,10 @@ shinyUI(fluidPage(
                    selected = "mens"),
 
       sliderInput("ast_range", "Assists:",
-                  min = 0, max = 60, value = c(0, 60)),
+                  min = 0, max = 60, value = c(4, 60)),
       
       sliderInput("goal_range", "Goals:",
-                  min = 0, max = 60, value = c(0, 60)),
+                  min = 0, max = 60, value = c(4, 60)),
 
       helpText("When selecting teams be sure to also select the correct division above."),
       
