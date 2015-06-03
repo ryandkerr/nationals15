@@ -13,49 +13,57 @@ BASE_URL = "http://play.usaultimate.org/events/USA-Ultimate-D-I-College-Champion
 
 # helper for making soup
 def make_soup(url):
-    html = urlopen(url).read()
-    s = BeautifulSoup(html, "lxml")
-    return s
+  html = urlopen(url).read()
+  s = BeautifulSoup(html, "lxml")
+  return s
 
 # takes url and returns array of http links to team pages
 # returns both men and women team links
 def get_team_links(section_url):
-    soup = make_soup(section_url)
-    team_table = soup.find("div", "eventSponsorInfo").table.find_all("a")
+  soup = make_soup(section_url)
+  team_table = soup.find("div", "eventSponsorInfo").table.find_all("a")
 
-    link_list = []
-    for link in team_table:
-            link_list.append(link.get("href"))
+  link_list = []
+  for link in team_table:
+      link_list.append(link.get("href"))
 
-    return link_list
+  return link_list
 
 team_links = get_team_links(BASE_URL)
 
 # creating csv from data
 with open("data/nationals15.csv", "wb") as csvout:
-    writer = csv.writer(csvout)
-    writer.writerow(["Team", "Division", "Number", "Player", "Position", "Height", "Goals", "Assists", "Ds", "Turnovers"])
+  writer = csv.writer(csvout)
+  writer.writerow(["Team", "Division", "Games", "Number", "Player", "Position", "Height", "Goals", "Assists", "Ds", "Turnovers"])
 
-    def get_rows(team_url):
-        soup = make_soup(team_url)
-        profile = soup.find("div", "profile_info")
-        team_name = profile.h4.get_text(strip=True)
-        division = profile.find("dl", id="CT_Main_0_dlGenderDivision").dd.get_text(strip=True)
+  def get_rows(team_url):
+    soup = make_soup(team_url)
+    profile = soup.find("div", "profile_info")
+    team_name = profile.h4.get_text(strip=True)
+    division = profile.find("dl", id="CT_Main_0_dlGenderDivision").dd.get_text(strip=True)
 
-        team_rows = soup.find("table", "global_table").find_all("tr")
+    schedule = soup.find_all("table", "schedule_table")[1].find_all("tr")
 
-        for i, row in enumerate(team_rows):
-            if i > 0:
-                r =[team_name, division]
-                for cell in row.find_all("td"):
-                    r.append(cell.get_text(strip=True))
-                writer.writerow(r)
+    games_played = 0
+    nat_schedule = False
+    
+    for row in schedule:
+      s = row.find_all("td")
+      if(len(s) > 0):
+        s = s[0].get_text(strip=True)
+      if(nat_schedule):
+        games_played += 1
+      if(s == "USA Ultimate D-I College Championships"):
+        nat_schedule = True
 
-    for team in team_links:
-        get_rows(team)
+    team_rows = soup.find("table", "global_table").find_all("tr")
 
+    for i, row in enumerate(team_rows):
+      if i > 0:
+        r =[team_name, division, games_played]
+        for cell in row.find_all("td"):
+          r.append(cell.get_text(strip=True))
+        writer.writerow(r)
 
-
-
-
-
+  for team in team_links:
+    get_rows(team)
